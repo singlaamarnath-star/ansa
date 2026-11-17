@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GST Pulse Outcome</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;background:#fff;color:#0b0b0b;max-width:900px;margin:24px auto;padding:0 16px}
+h1{font-size:20px;font-weight:600;margin:0 0 4px}.sub{color:#6b6a65;font-size:13px;margin-bottom:20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.k{background:#f5f4f0;border-radius:8px;padding:14px}.k .l{font-size:13px;color:#52514e;display:flex;align-items:center;gap:6px}
+.k .v{font-size:26px;font-weight:600}.k .n{font-size:13px;color:#898781}.sq{width:10px;height:10px;border-radius:2px;display:inline-block}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}.t{font-size:14px;color:#52514e;margin-bottom:8px}
+.box{position:relative;height:280px}
+</style></head><body>
+<h1>GST Pulse: who won? (02.11.2026 to 13.11.2026)</h1>
+<div class="sub">22 cases: High Courts, Supreme Court and GSTAT | Source: GSTIndiaPathway</div>
+<div class="kpis">
+<div class="k"><div class="l"><span class="sq" style="background:#1baf7a"></span>Taxpayer</div><div class="v">81.8%</div><div class="n">18 of 22 cases</div></div>
+<div class="k"><div class="l"><span class="sq" style="background:#e34948"></span>Revenue</div><div class="v">13.6%</div><div class="n">3 of 22 cases</div></div>
+<div class="k"><div class="l"><span class="sq" style="background:#eda100"></span>Partly both</div><div class="v">4.5%</div><div class="n">1 of 22 cases</div></div>
+</div>
+<div class="charts">
+<div><div class="t">Overall outcome</div><div class="box"><canvas id="donut"></canvas></div></div>
+<div><div class="t">Outcome by forum (% of cases)</div><div class="box"><canvas id="forum"></canvas></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const C=['#1baf7a','#e34948','#eda100'];
+const pl={id:'pl',afterDatasetsDraw(c){const x=c.ctx,ds=c.data.datasets[0];c.getDatasetMeta(0).data.forEach((a,i)=>{const p=ds.data[i]/22*100;if(p<10)return;const q=a.tooltipPosition();x.save();x.fillStyle='#fff';x.font='bold 13px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(p.toFixed(1)+'%',q.x,q.y);x.restore();});const m=c.getDatasetMeta(0).data[0];x.save();x.textAlign='center';x.fillStyle='#0b0b0b';x.font='bold 24px sans-serif';x.fillText('22',m.x,m.y);x.fillStyle='#898781';x.font='12px sans-serif';x.fillText('cases',m.x,m.y+18);x.restore();}};
+new Chart(donut,{type:'doughnut',data:{labels:['Taxpayer','Revenue','Partly both'],datasets:[{data:[18,3,1],backgroundColor:C,borderColor:'#fff',borderWidth:2}]},options:{maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.label+': '+c.raw+' ('+(c.raw/22*100).toFixed(1)+'%)'}}}},plugins:[pl]});
+const tot=[10,1,11],pc=a=>a.map((v,i)=>+(v/tot[i]*100).toFixed(1));
+new Chart(forum,{type:'bar',data:{labels:['High Courts (10)','Supreme Court (1)','GSTAT (11)'],datasets:[
+{label:'Taxpayer',data:pc([10,1,7]),backgroundColor:C[0],maxBarThickness:28},
+{label:'Revenue',data:pc([0,0,3]),backgroundColor:C[1],maxBarThickness:28},
+{label:'Partly both',data:pc([0,0,1]),backgroundColor:C[2],maxBarThickness:28}]},
+options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.raw+'%'}}},scales:{x:{stacked:true,max:100,ticks:{callback:v=>v+'%'}},y:{stacked:true,grid:{display:false}}}}});
+</script>
+</body></html>
